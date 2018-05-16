@@ -1,12 +1,31 @@
 apply plugin: 'c'
 model {
     components {
-        hello(NativeLibrarySpec)
+        hello(NativeLibrarySpec) {
+	    sources {
+	        c {
+		    source {
+		        srcDir "src/hello/c"
+			include "**/*.c"
+		    }
+		    exportedHeaders {
+		        srcDir "src/hello/headers"
+		    }
+		}
+
+	    }
+	}
         main(NativeExecutableSpec) {
 	    sources {
 	        c {
-		    lib library: "hello"
+		    source {
+		        srcDir "src/main/c"
+			include "**/*.c"
+		    }
 		}
+	    }
+	    binaries.all {
+	        lib library: 'hello', linkage: 'static'
 	    }
 	}
     }
