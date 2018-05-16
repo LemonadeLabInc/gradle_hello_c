@@ -10,14 +10,3 @@ model {
     }
 }
 
-//sources {
-//    c {
-//        source {
-//	    srcDir "src/hello"
-//	    include "**/*.c"
-//	}
-//	exportedHeaders {
-//	    srcDir "include"
-//	}
-//    }
-//}
