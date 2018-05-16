@@ -1,7 +1,37 @@
 apply plugin: 'c'
+
+def stm32_cflags = "-mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16".trim()
+def arm_cflags = "-O1 -fmessage-length=0 -fsigned-char -fno-move-loop-invariants -gstrict-dwarf -ffunction-sections -fdata-sections".trim()
+def arm_linkerflags = "-TLinkerScript.ld -u print_float -Wl,--gc-sections -Wl,-rpath,/home/jun/opt/gcc-arm-none-eabi-6-2017-q2-update/lib".trim()
+
 model {
+    toolChains {
+        gcc(Gcc) {
+	    eachPlatform { tools ->
+	        tools.cCompiler.executable = "arm-none-eabi-gcc"
+		tools.linker.executable = "arm-none-eabi-gcc"
+	    }
+	    target("arm") {
+	        cCompiler.withArguments { args ->
+		    args.addAll(stm32_cflags.tokenize(' '))
+		    args.addAll(arm_cflags.tokenize(' '))
+		}
+		linker.withArguments { args ->
+		    args.addAll(stm32_cflags.tokenize(' '))
+		    args.addAll(arm_cflags.tokenize(' '))
+		    args.addAll(arm_linkerflags.tokenize(' '))
+		}
+	    }
+	}
+    }
+    platforms {
+        arm {
+	    architecture "arm"
+	}
+    }
     components {
         hello(NativeLibrarySpec) {
+	    targetPlatform "arm"
 	    sources {
 	        c {
 		    source {
@@ -12,10 +42,10 @@ model {
 		        srcDir "src/hello/headers"
 		    }
 		}
-
 	    }
 	}
         main(NativeExecutableSpec) {
+	    targetPlatform "arm"
 	    sources {
 	        c {
 		    source {
@@ -30,4 +60,5 @@ model {
 	}
     }
 }
+
 
